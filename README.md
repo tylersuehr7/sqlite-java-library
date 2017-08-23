@@ -8,6 +8,11 @@ If you're using this approach, `SQLiteOpenHelper`, guarantees that `onCreate(SQL
 
 Incrementing the database version, after it has been created, guarantees that `SQLiteOpenHelper` will call `onUpdate(SQLiteDatabase, int, int)`. This method can be used to update table structures or drop and re-create all tables.
 
+### Database-First Approach
+Use this approach if you already have a SQLite database file that you wish to use during runtime.
+
+If you're using this approach, `SQLiteOpenHelper`, will NOT call `onCreate(SQLiteDatabase)`. However, you can still utilize the database version if you wish to update the database programmatically. Incrementing the database version will still guarentee that `SQLiteOpenHelper` will call `onUpdate(SQLiteDatabase, int, int)`.
+
 ### Code-First Example:
 Step 1: Inherit `SQLiteOpenHelper` and implement the abtract methods.
 ```java

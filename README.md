@@ -13,7 +13,7 @@ Use this approach if you already have a SQLite database file that you wish to us
 
 If you're using this approach, `SQLiteOpenHelper`, will NOT call `onCreate(SQLiteDatabase)`. However, you can still utilize the database version if you wish to update the database programmatically. Incrementing the database version will still guarentee that `SQLiteOpenHelper` will call `onUpdate(SQLiteDatabase, int, int)`.
 
-### Code-First Example:
+### Code-First Example
 Step 1: Inherit `SQLiteOpenHelper` and implement the abtract methods.
 ```java
   public final class DatabaseClient extends SQLiteOpenHelper {
@@ -60,12 +60,64 @@ Step 2: Create using a Singleton, add logic for your database structure, and exp
           onCreate(db);
       }
       
+      /**
+       * Expose the SQLiteDatabase to anything that wants to use it.
+       */
       public SQLiteDatabase getDatabase() {
           return db;
       }
       
       private void createUsersTable(SQLiteDatabase db) {
           db.execSql("CREATE TABLE [users]([id] INTEGER PRIMARY KEY, [name] TEXT NOT NULL);");
+      }
+  }
+```
+
+### Database-First Example
+Step 1: Inherit `SQLiteOpenHelper` and implement the abtract methods. You won't need to add code to `onCreate(SQLiteDatabase)`, but you can for `onUpdate(SQLiteDatabase, int, int)` if you're going to manage updates programmatically.
+```java
+  public final class DatabaseClient extends SQLiteOpenHelper {
+      @Override
+      protected void onCreate(SQLiteDatabase db) {}
+      
+      @Override
+      protected void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion) {
+          ...
+      }
+  }
+```
+Step 2: Setup using the Singleton design pattern and be sure to use the exact path of your SQLite database file you want to use. Expose the `SQLiteDatabase` object.
+```java
+  public final class DatabaseClient extends SQLiteOpenHelper {
+      private static final String DB_NAME = "name_of_existing_database_file.db";
+      private static final int DB_VERSION = 1;
+      private static volatile DatabaseClient instance;
+      private final SQLiteDatabase db;
+      
+      
+      private DatabaseClient() {
+          super(DB_NAME, DB_VERSION);
+          this.db = getWritableDatabase();
+      }
+      
+      public static synchronized DatabaseClient getInstance() {
+          if (instance == null) {
+              instance = new DatabaseClient();
+          }
+          return instance;
+      }
+      
+      @Override
+      protected void onCreate(SQLiteDatabase db) {}
+      
+      @Override
+      protected void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion) {}
+      
+      /**
+       * Expose the SQLiteDatabase to anything that wants to use it.
+       */
+      public SQLiteDatabase getDatabase() {
+          return db;
       }
   }
 ```

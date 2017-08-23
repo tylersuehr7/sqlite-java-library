@@ -16,7 +16,7 @@ Step 1: Inherit `SQLiteOpenHelper` and implement the abtract methods.
       }
   }
 ```
-Step 2: Construct using a Singleton, add logic for your database structure, and expose the `SQLiteDatabase`.
+Step 2: Create using a Singleton, add logic for your database structure, and expose the `SQLiteDatabase`.
 ```java
   public final class DatabaseClient extends SQLiteOpenHelper {
       private static final String DB_NAME = "johnny_vaughn_db";

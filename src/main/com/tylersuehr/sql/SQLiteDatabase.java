@@ -19,6 +19,8 @@ import java.sql.Statement;
  * (4) Query data in the database. {@link #query(String, String, String, String)}
  * (5) Raw query data in the database. {@link #rawQuery(String)}
  * (6) Raw command on the database. {@link #execSql(String)}
+ *
+ * @author Tyler Suehr
  */
 public final class SQLiteDatabase extends SQLiteCloseable {
     private static final String DRIVER = "org.sqlite.JDBC";

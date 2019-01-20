@@ -6,16 +6,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Copyright 2017 Tyler Suehr
- * Created by tyler on 8/23/2017.
+ * The SQLite database itself.
+ * This object allows ease of querying or executing commands.
  *
- * This represents the SQLite database itself. With this object, we will be able to easily query
- * or execute commands on it.
+ * Will handle establishing the connection, managing statements, and closing the connection
+ * to the database by utilizing the SQLite JDBC drivers.
  *
- * This handles the establishing the connection, managing statements, and closing connections to
- * our database by utilizing the SQLite JDBC drivers.
- *
- * We are able to perform the following operations with this object:
+ * The following operations are supported:
  * (1) Insert data into the database. {@link #insert(String, ContentValues)}
  * (2) Update data in the database. {@link #update(String, ContentValues, String)}
  * (3) Delete data in the database. {@link #delete(String, String)}
@@ -45,19 +42,20 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             if (statement != null) {
                 this.statement.close();
             }
-            Log.i(this, "All references released!");
+            System.out.println("All references released!");
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         }
     }
 
     /**
      * Queries data from the SQLite database.
-     * @param table Name of table
-     * @param selection Where clause (Ex: "[id]=12")
-     * @param order OrderBy clause (Ex: "[timestamp ASC]")
-     * @param limit Limit clause (Ex: "4")
-     * @return {@link ResultSet}
+     *
+     * @param table the name of the table to query
+     * @param selection the WHERE clause (i.e. "[id]=12")
+     * @param order the ORDER BY clause (i.e. "[timestamp ASC]")
+     * @param limit the LIMIT clause (i.e. "4")
+     * @return the results
      */
     public ResultSet query(String table, String selection, String order, String limit) {
         acquireReference();
@@ -65,7 +63,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             final String SQL = builder.createQuery(table, selection, order, limit);
             return statement.executeQuery(SQL);
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
             return null;
         } finally {
             releaseReference();
@@ -74,8 +72,9 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Convenience method for inserting data into the SQLite database.
-     * @param table Name of table
-     * @param values {@link ContentValues}
+     *
+     * @param table the name of the table
+     * @param values the content to be inserted
      */
     public void insert(String table, ContentValues values) {
         acquireReference();
@@ -84,7 +83,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         } finally {
             releaseReference();
         }
@@ -92,9 +91,10 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Convenience method for updating data in the SQLite database.
-     * @param table Name of table
-     * @param values {@link ContentValues}
-     * @param selection Where clause
+     *
+     * @param table the name of the table
+     * @param values the content to be updated
+     * @param selection the WHERE clause
      */
     public void update(String table, ContentValues values, String selection) {
         acquireReference();
@@ -103,7 +103,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         } finally {
             releaseReference();
         }
@@ -111,8 +111,9 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Convenience method for deleting data in the SQLite database.
-     * @param table Name of table
-     * @param selection Where clause
+     *
+     * @param table the name of the table
+     * @param selection the WHERE clause
      */
     public void delete(String table, String selection) {
         acquireReference();
@@ -121,7 +122,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         } finally {
             releaseReference();
         }
@@ -129,15 +130,16 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Queries data from the SQLite database using a raw SQL query.
-     * @param sql SQL query
-     * @return {@link ResultSet}
+     *
+     * @param sql the SQL query to run
+     * @return the results
      */
     public ResultSet rawQuery(String sql) {
         acquireReference();
         try {
             return statement.executeQuery(sql);
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
             return null;
         } finally {
             releaseReference();
@@ -146,7 +148,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Executes a command on the SQLite database using a raw SQL query.
-     * @param sql SQL query
+     * @param sql the SQL query to run
      */
     public void execSql(String sql) {
         acquireReference();
@@ -154,7 +156,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             this.statement.executeUpdate(sql);
             this.connection.commit();
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         } finally {
             releaseReference();
         }
@@ -162,7 +164,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Sets the user version of the SQLite database.
-     * @param version User database version
+     * @param version the user version to be set
      */
     void setVersion(int version) {
         acquireReference();
@@ -171,7 +173,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         } finally {
             releaseReference();
         }
@@ -179,7 +181,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Gets the user version of the SQLite database.
-     * @return User database version
+     * @return the user version of the database
      */
     int getVersion() {
         acquireReference();
@@ -188,7 +190,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             ResultSet c = statement.executeQuery(SQL);
             return c.getInt("user_version");
         } catch (SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
             return -1;
         } finally {
             releaseReference();
@@ -197,7 +199,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
 
     /**
      * Opens a connection to the SQLite database.
-     * @param dbName Name of the database file (don't include file extension).
+     * @param dbName the name of the database file (don't include file extension)
      */
     private void openConnection(String dbName) {
         try {
@@ -207,7 +209,16 @@ public final class SQLiteDatabase extends SQLiteCloseable {
             this.statement = connection.createStatement();
             acquireReference();
         } catch (ClassNotFoundException|SQLException ex) {
-            Log.wtf(this, ex);
+            logException(ex);
         }
+    }
+
+    /**
+     * Convenience method to log an exception and print its stacktrace.
+     * @param ex the exception
+     */
+    private void logException(final Exception ex) {
+        System.err.println("SQLite > " + ex.getMessage());
+        ex.printStackTrace();
     }
 }

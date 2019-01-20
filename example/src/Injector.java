@@ -31,8 +31,12 @@ import repositories.users.UserRepository;
  * @author Tyler Suehr
  */
 public final class Injector {
+    public static DatabaseClient client() {
+        return DatabaseClient.getInstance();
+    }
+
     public static UserRepository provideUserRepo() {
-        return UserRepository.getInstance(new LocalUserRepository(
-                DatabaseClient.getInstance(), new UserMapper()));
+        return UserRepository.getInstance(
+                new LocalUserRepository(client(), new UserMapper()));
     }
 }

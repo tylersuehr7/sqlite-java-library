@@ -60,11 +60,11 @@ public final class SQLiteDatabase extends SQLiteCloseable {
     @Override
     protected void onAllReferencesReleased() {
         try {
-            if (connection != null) {
-                this.connection.close();
-            }
             if (statement != null) {
                 this.statement.close();
+            }
+            if (connection != null) {
+                this.connection.close();
             }
             System.out.println("All references released!");
         } catch (SQLException ex) {

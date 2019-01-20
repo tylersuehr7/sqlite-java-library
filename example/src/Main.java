@@ -25,6 +25,7 @@
 import java.util.List;
 import java.util.UUID;
 import models.User;
+import repositories.DatabaseClient;
 import repositories.ListCallback;
 import repositories.users.IUserRepository;
 
@@ -33,11 +34,15 @@ import repositories.users.IUserRepository;
  */
 public final class Main {
     public static void main(String[] args) throws Exception {
+        final DatabaseClient client = Injector.client();
+
         addUserToDatabase("David", "Clarke");
         addUserToDatabase("Boomhower", "Smith");
         addUserToDatabase("Sandy", "Higgins");
         addUserToDatabase("Wanda", "Dempsey");
         loadAllUsers();
+
+        client.close();
     }
 
     private static void addUserToDatabase(String first, String last) {

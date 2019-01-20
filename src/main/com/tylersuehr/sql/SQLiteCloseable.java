@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * still be using it. This will close itself after the last reference has been released.
  *
  * {@link #onAllReferencesReleased()} is called when the last reference is released.
+ *
+ * @author Tyler Suehr
  */
 abstract class SQLiteCloseable implements Closeable {
     private final AtomicInteger refs = new AtomicInteger(0);

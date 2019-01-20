@@ -25,13 +25,11 @@ import java.sql.Statement;
 public final class SQLiteDatabase extends SQLiteCloseable {
     private static final String DRIVER = "org.sqlite.JDBC";
     private static final String PATH = "jdbc:sqlite:";
-    private final SQLBuilder builder;
     private Connection connection;
     private Statement statement;
 
 
     SQLiteDatabase(String dbName) {
-        this.builder = new SQLBuilder();
         openConnection(dbName);
     }
 
@@ -62,7 +60,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
     public ResultSet query(String table, String selection, String order, String limit) {
         acquireReference();
         try {
-            final String SQL = builder.createQuery(table, selection, order, limit);
+            final String SQL = SQLBuilder.createQuery(table, selection, order, limit);
             return statement.executeQuery(SQL);
         } catch (SQLException ex) {
             logException(ex);
@@ -81,7 +79,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
     public void insert(String table, ContentValues values) {
         acquireReference();
         try {
-            final String SQL = builder.createInsert(table, values);
+            final String SQL = SQLBuilder.createInsert(table, values);
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {
@@ -101,7 +99,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
     public void update(String table, ContentValues values, String selection) {
         acquireReference();
         try {
-            final String SQL = builder.createUpdate(table, values, selection);
+            final String SQL = SQLBuilder.createUpdate(table, values, selection);
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {
@@ -120,7 +118,7 @@ public final class SQLiteDatabase extends SQLiteCloseable {
     public void delete(String table, String selection) {
         acquireReference();
         try {
-            final String SQL = builder.createDelete(table, selection);
+            final String SQL = SQLBuilder.createDelete(table, selection);
             this.statement.executeUpdate(SQL);
             this.connection.commit();
         } catch (SQLException ex) {

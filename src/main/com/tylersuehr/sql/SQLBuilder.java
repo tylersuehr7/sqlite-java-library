@@ -6,7 +6,7 @@ package com.tylersuehr.sql;
  */
 final class SQLBuilder {
     // SELECT * FROM [table] WHERE [col1] = value ORDER BY [col] LIMIT 0;
-    String createQuery(String table, String selection, String order, String limit) {
+    static String createQuery(String table, String selection, String order, String limit) {
         final StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM ").append("[").append(table).append("]");
         sb.append(selection != null ? " WHERE " + selection : "");
@@ -17,7 +17,7 @@ final class SQLBuilder {
     }
 
     // SELECT ([col1],[col2],[col3]) FROM [table] WHERE [col] = value ORDER BY [col] LIMIT 0;
-    String createQuery(String table, String[] cols, String selection, String order, String limit) {
+    static String createQuery(String table, String[] cols, String selection, String order, String limit) {
         final StringBuilder sb = new StringBuilder();
         sb.append("SELECT ");
 
@@ -43,7 +43,7 @@ final class SQLBuilder {
     }
 
     // INSERT INTO [table] ([col1],[col2],[col3],[col4]) VALUES ('test', 'test2', 123, 12.123);
-    String createInsert(String table, ContentValues values) {
+    static String createInsert(String table, ContentValues values) {
         final StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ");
         sb.append("[").append(table).append("] (");
@@ -71,7 +71,7 @@ final class SQLBuilder {
     }
 
     // UPDATE [table] SET [col1] = 'test' WHERE [col2] = 3;
-    String createUpdate(String table, ContentValues values, String selection) {
+    static String createUpdate(String table, ContentValues values, String selection) {
         final StringBuilder sb = new StringBuilder(120);
         sb.append("UPDATE ");
         sb.append("[").append(table).append("]");
@@ -97,7 +97,7 @@ final class SQLBuilder {
     }
 
     // DELETE FROM [table] WHERE [col1] = 23;
-    String createDelete(String table, String selection) {
+    static String createDelete(String table, String selection) {
         final StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM ");
         sb.append("[").append(table).append("]");

@@ -3,8 +3,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Copyright 2017 Tyler Suehr
- * Created by tyler on 8/23/2017.
+ * @author Tyler Suehr
  */
 public class ContentValuesTest {
     @Test
@@ -32,7 +31,7 @@ public class ContentValuesTest {
         values.put("3", 3.42f);
         values.put("4", 823.23421);
 
-        float value = values.find("3");
+        float value = values.getSerializable("3");
         Assert.assertTrue(value == 3.42f);
     }
 }

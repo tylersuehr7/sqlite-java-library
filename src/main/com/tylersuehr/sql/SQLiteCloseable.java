@@ -3,44 +3,41 @@ import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Copyright 2017 Tyler Suehr
- * Created by tyler on 8/23/2017.
+ * Stores a count of references to this object.
  *
- * This allows us to acquire and release references, stored as an integer value.
+ * This prevents a thread from actually closing the database while another thread may
+ * still be using it. This will close itself after the last reference has been released.
  *
- * We use these references for concurrency reasons, to prevent a Thread from closing this object
- * while any other Threads may be using it.
- *
- * {@link #onAllReferencesReleased()} is called when there are no more references to this object
- * and should be used to clean-up or recycle stuff.
+ * {@link #onAllReferencesReleased()} is called when the last reference is released.
  */
 abstract class SQLiteCloseable implements Closeable {
-    final AtomicInteger refs = new AtomicInteger(0);
+    private final AtomicInteger refs = new AtomicInteger(0);
 
 
     @Override
-    public void close() {
+    public final void close() {
         releaseReference();
     }
 
     /**
      * Called when the last reference to this object is released.
+     * This method is to be used for actual database cleanup.
      */
     protected abstract void onAllReferencesReleased();
 
     /**
-     * Acquires a reference by incrementing {@link #refs}.
+     * Acquires a reference to this object.
      */
-    protected void acquireReference() {
+    protected final void acquireReference() {
         this.refs.getAndIncrement();
     }
 
     /**
-     * Releases a reference by decrementing {@link #refs}. Also checks references and
-     * will call {@link #onAllReferencesReleased()} when there are no more references.
+     * Releases a single reference from this object.
+     * Determines if this object should invoke {@link #onAllReferencesReleased()}.
      */
-    protected void releaseReference() {
-        int count = refs.decrementAndGet();
+    protected final void releaseReference() {
+        final int count = refs.decrementAndGet();
         if (count < 0) {
             throw new IllegalStateException("Cannot have less than 0 references!");
         } else if (count == 0) {
@@ -49,10 +46,10 @@ abstract class SQLiteCloseable implements Closeable {
     }
 
     /**
-     * Checks if this object has any references.
-     * @return True if this object has references
+     * Determines if there is at least 1 reference to this object.
+     * @return true if at least 1 reference exists, otherwise false
      */
-    protected boolean hasReference() {
+    protected final boolean hasReference() {
         return refs.get() > 0;
     }
 }

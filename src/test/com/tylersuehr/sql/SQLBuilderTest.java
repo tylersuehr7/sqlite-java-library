@@ -3,8 +3,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Copyright 2017 Tyler Suehr
- * Created by tyler on 8/23/2017.
+ * @author Tyler Suehr
  */
 public class SQLBuilderTest {
     @Test
